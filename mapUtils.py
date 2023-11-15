@@ -143,61 +143,6 @@ def create_map(lat: float, lon: float, bbox: Tuple[float, float, float, float]) 
     return m_obj
 
 
-# TODO - remove
-# def create_choropleth_map(lat: float,
-#                           lon: float,
-#                           bbox_geojson: Dict,
-#                           fig: Optional[go.Figure] = None) -> go.Figure:
-#     """Create thematic map to represent statistical data with shaded regions."""
-
-#     if fig is None:
-#         # Initialize a figure if it's not passed in
-#         fig = px.choropleth_mapbox(zoom=10, center={"lat": lat, "lon": lon})
-
-#     # TODO - remove
-#     #  Adding the bounding box
-#     # coords = bbox_geojson['coordinates'][0]
-#     # fig.add_shape(
-#     #     go.layout.Shape(
-#     #         type='polygon',
-#     #         coordinates=coords,
-#     #         line={ "width": 2 }
-#     #     ),
-#     #     row=1,
-#     #     col=1
-#     # )
-#     coords = bbox_geojson['coordinates'][0]
-#     path = 'M ' + ' L '.join([f'{lon}, {lat}' for lat, lon in coords]) + ' Z'
-#     fig.add_shape(
-#         go.layout.Shape(
-#             type='path',
-#             path=path,
-#             line={ "width": 2 }
-#         ),
-#         row=1,
-#         col=1
-#     )
-
-#     # Adding the marker for the center point
-#     fig.add_trace(
-#         go.Scattermapbox(
-#             lat=[lat],
-#             lon=[lon],
-#             mode='markers',
-#             marker=go.scattermapbox.Marker(size=14, color='red')
-#         )
-#     )
-
-#     # General update to layout
-#     fig.update_layout(
-#         mapbox_style='carto-positron',
-#         mapbox_zoom=9,
-#         mapbox_center={"lat": lat, "lon": lon}
-#     )
-
-#     return fig
-
-
 def update_map_with_tiles(folium_map_obj: folium.Map,
                           tiles_gdf: gpd.GeoDataFrame,
                           animation_filename: str,
@@ -205,7 +150,7 @@ def update_map_with_tiles(folium_map_obj: folium.Map,
     """Update a map with new folium polygon objects."""
 
     if tiles_gdf.empty:
-        print("No items found.")
+        logger.warning("No items found.")
         return None  # or however you want to handle an empty response
 
     grouped = group_by_capture(tiles_gdf)
@@ -311,10 +256,10 @@ def process_multiple_points_choropleth(
     return master_fig, aois_list
 
 
-def create_heatmap_for_age(aggregated_gdf: Dict) -> folium.Map:
+def create_heatmap_for_age(aggregated_gdf: gpd.GeoDataFrame) -> folium.Map:
     """Creates a heat map based on age of data, using a linear color map."""
 
-    # Sort the GeoDataFrame based on data_age, so that less old squares are on top
+    # Sort the GeoDataFrame based on data_age, so that newer squares are on top
     aggregated_gdf = aggregated_gdf.sort_values(by='data_age', ascending=False)
 
     # Determine the center of your data to set the initial view of the map
@@ -365,7 +310,7 @@ def create_heatmap_for_age(aggregated_gdf: Dict) -> folium.Map:
     return m
 
 
-def create_heatmap_for_image_count(aggregated_gdf: Dict) -> folium.Map:
+def create_heatmap_for_image_count(aggregated_gdf: gpd.GeoDataFrame) -> folium.Map:
     """Creates a heat map based on quantity of available data using a linear color map."""
 
     # # Sort the GeoDataFrame based on image_count
@@ -424,7 +369,7 @@ def create_heatmap_for_image_count(aggregated_gdf: Dict) -> folium.Map:
     return m
 
 
-def create_heatmap_for_cloud(tiles_gdf: Dict, existing_fig: go.Figure = None) -> go.Figure:
+def create_heatmap_for_cloud(tiles_gdf: gpd.GeoDataFrame, existing_fig: go.Figure = None) -> go.Figure:
     """Creates a heat map based on cloud coverage in available data using a linear color map."""
 
     if tiles_gdf.empty:
