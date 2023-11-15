@@ -258,7 +258,7 @@ class TestProcessMultiplePointsToBboxs(unittest.TestCase):
 
 
 class TestProcessMultiplePointsChoropleth(unittest.TestCase):
-    """."""
+    """Multiple polygon choropleth and "master" figure test."""
 
     def setUp(self):
         self.points = [
@@ -268,14 +268,18 @@ class TestProcessMultiplePointsChoropleth(unittest.TestCase):
         self.width = 3  # Example width for bounding box
 
     def test_return_types(self):
-        """."""
+        """The function returns a go.Figure and a list of dictionaries."""
         master_fig, aois_list = process_multiple_points_choropleth(
             self.points, self.width)
         self.assertIsInstance(master_fig, go.Figure)
         self.assertIsInstance(aois_list, list)
 
     def test_aois_and_traces_added(self):
-        """The "master" figure's layout is correctly updated based on the calculated global bounding box."""
+        """The "master" figure is correctly updated with traces from each bounding box choropleth map.
+
+        The list of AOIs corresponds to the number of points provided.
+
+        The "master" figure's layout is correctly updated based on the calculated global bounding box."""
         estimate_zoom_level.return_value = 10
         fig = go.Figure()
         fig.add_trace(go.Scattermapbox())  # Adding a dummy trace
@@ -439,7 +443,9 @@ class TestCreateFoliumBasemap(unittest.TestCase):
         self.assertIsInstance(map_obj, folium.Map)
 
     def test_polygon_and_image_overlay_added(self):
-        """Check that polygons and image overlays are added to the map for each geometry in capture_grouped_tiles_gdf."""
+        """Check that polygons and image overlays are added to the map for each geometry in
+        capture_grouped_tiles_gdf.
+        """
         map_obj = create_folium_basemap(self.capture_grouped_tiles_gdf)
         polygon_added = any(isinstance(child, folium.vector_layers.Polygon)
                             for child in map_obj._children.values())

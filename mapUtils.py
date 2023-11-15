@@ -214,8 +214,9 @@ def process_multiple_points_to_bboxs(
 def process_multiple_points_choropleth(
         points: List[Dict[str, float]],
         width: float) -> Tuple[go.Figure, List[Dict]]:
-    """Initialize the "master" Plotly figure."""
+    """Manage a multiple polygon choropleth and maintain a "master" figure."""
 
+    # Initialize the "master" Plotly figure.
     master_fig = go.Figure()
 
     aois_list = []
@@ -239,8 +240,6 @@ def process_multiple_points_choropleth(
     zoom_level = estimate_zoom_level(minx, miny, maxx, maxy)
     zoom_level = zoom_level - 2
 
-    # print(f"Zoom: {zoom_level}")
-    # print(f"Min xy, Max xy: {minx}:{miny},{maxx}:{maxy}")
     # Update the layout of the "master" figure
     master_fig.update_layout(
         mapbox= {
